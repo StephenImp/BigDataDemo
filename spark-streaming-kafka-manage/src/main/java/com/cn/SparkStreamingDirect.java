@@ -32,7 +32,9 @@ import kafka.serializer.StringDecoder;
 import scala.Tuple2;
 
 public class SparkStreamingDirect {
+
 	public static JavaStreamingContext getStreamingContext(Map<TopicAndPartition, Long> topicOffsets,String groupID){
+
 		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("SparkStreamingOnKafkaDirect");
 		conf.set("spark.streaming.kafka.maxRatePerPartition", "10");
         JavaStreamingContext jsc = new JavaStreamingContext(conf, Durations.seconds(5));
