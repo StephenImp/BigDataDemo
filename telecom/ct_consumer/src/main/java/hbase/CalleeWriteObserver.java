@@ -16,10 +16,16 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+/**
+ * 协处理器,跟过滤器，拦截器什么的很像。
+ * 一条记录，被叫的数据，用写处理器插入。
+ */
 public class CalleeWriteObserver extends BaseRegionObserver{
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+
     @Override
     public void postPut(ObserverContext<RegionCoprocessorEnvironment> e, Put put, WALEdit edit, Durability durability) throws IOException {
+
         super.postPut(e, put, edit, durability);
         //1、获取你想要操作的目标表的名称
         String targetTableName = PropertiesUtil.getProperty("hbase.calllog.tablename");

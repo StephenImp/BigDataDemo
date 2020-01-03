@@ -16,17 +16,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HBaseDAO {
-    private int regions;
-    private String namespace;
-    private String tableName;
-    public static final Configuration conf;
+    private int regions;//分区数量
+    private String namespace;//名称
+    private String tableName;//表名
+    public static final Configuration conf;//配置文件
     private HTable table;
-    private Connection connection;
+    private Connection connection;//hbase 连接
     private SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMddHHmmss");
 
     private List<Put> cacheList = new ArrayList<>();
+
+    //初始化默认配置信息
     static {
+        //默认加载 core-site.xml,hbase-site.xml,hdfs-site.xml
         conf = HBaseConfiguration.create();
     }
 
@@ -72,6 +75,7 @@ public class HBaseDAO {
 
             //生成rowkey
             String rowkey = HBaseUtil.genRowKey(regionCode, caller, buildTimeReplace, callee, "1", duration);
+
             //向表中插入该条数据
             Put put = new Put(Bytes.toBytes(rowkey));
             put.addColumn(Bytes.toBytes("f1"), Bytes.toBytes("call1"), Bytes.toBytes(caller));

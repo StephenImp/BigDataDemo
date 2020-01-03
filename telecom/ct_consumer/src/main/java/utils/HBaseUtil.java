@@ -45,8 +45,8 @@ public class HBaseUtil {
 
         NamespaceDescriptor nd = NamespaceDescriptor
                 .create(namespace)
-                .addConfiguration("CREATE_TIME", String.valueOf(System.currentTimeMillis()))
-                .addConfiguration("AUTHOR", "JinJi")
+                .addConfiguration("CREATE_TIME", String.valueOf(System.currentTimeMillis()))//创建时间
+                .addConfiguration("AUTHOR", "wpw")//作者
                 .build();
 
         admin.createNamespace(nd);
@@ -56,7 +56,7 @@ public class HBaseUtil {
     }
 
     /**
-     * 创建表：协处理器
+     * 创建表
      * @param conf
      * @param tableName
      * @param columnFamily
@@ -69,26 +69,47 @@ public class HBaseUtil {
         if(isExistTable(conf, tableName)) return;
 
         HTableDescriptor htd = new HTableDescriptor(TableName.valueOf(tableName));
+
+        //添加列族
         for(String cf: columnFamily){
             htd.addFamily(new HColumnDescriptor(cf));
         }
         htd.addCoprocessor("hbase.CalleeWriteObserver");
+
         admin.createTable(htd, genSplitKeys(regions));
+
         admin.close();
         connection.close();
     }
 
+    /**
+     * 自定义分区键(regionCode) --- 预分区
+     * rowKey --- regionCode_call1_buildTime_call2_flag_duration
+     *
+     *
+     * xxxx % 3    那么结果一定是0-2
+     *
+     * 预留一个分区---存放错误数据，或者防止出现异常情况。。。
+     *
+     * @param regions
+     * @return
+     */
     private static byte[][] genSplitKeys(int regions){
-        //定义一个存放分区键的数组
+
+        //定义一个存放分区键的数组(根据经验预测需要几个分区)
+        //一个分区的数据量(1-10G)
         String[] keys = new String[regions];
         //目前推算，region个数不会超过2位数，所以region分区键格式化为两位数字所代表的字符串
+
+        //生成预分区号。
         DecimalFormat df = new DecimalFormat("00");
         for(int i = 0; i < regions; i ++){
             keys[i] = df.format(i) + "|";
         }
 
         byte[][] splitKeys = new byte[regions][];
-        //生成byte[][]类型的分区键的时候，一定要保证分区键是有序的
+
+        //生成byte[][]类型的分区键的时候，一定要保证分区键是有序的 ***
         TreeSet<byte[]> treeSet = new TreeSet<>(Bytes.BYTES_COMPARATOR);
         for(int i = 0; i < regions; i++){
             treeSet.add(Bytes.toBytes(keys[i]));
@@ -105,7 +126,7 @@ public class HBaseUtil {
 
     /**
      * 生成rowkey
-     * regionCode_call1_buildTime_call2_flag_duration
+     * regionCode_call1_buildTime_call2_flag_duration(持续时间)
      * @return
      */
     public static String genRowKey(String regionCode, String call1, String buildTime, String call2, String flag, String duration){
@@ -122,6 +143,10 @@ public class HBaseUtil {
     /**
      * 手机号：15837312345
      * 通话建立时间：2017-01-10 11:20:30 -> 20170110112030
+     *
+     * 为什么要加手机号啊？还是没明白，根据日期不就行了吗
+     * 根据startRow和stopRow 能查询出，某个人，某个时间段之内的话单
+     *
      * @param call1
      * @param buildTime
      * @param regions
@@ -137,17 +162,25 @@ public class HBaseUtil {
                 .replaceAll(":", "")
                 .replaceAll(" ", "")
                 .substring(0, 6);
+
         //离散操作1
         Integer x = Integer.valueOf(lastPhone) ^ Integer.valueOf(ym);
-        int a = 10;
-        int b = 20;
-        a = a ^ b;
-        b = a ^ b;
-        a = a ^ b;
+
+
+        //这里是举例子，交换两个基本数据类型的变量的内容
+//        int a = 10;
+//        int b = 20;
+//        a = a ^ b;
+//        b = a ^ b;
+//        a = a ^ b;
+
         //离散操作2
         int y = x.hashCode();
+
         //生成分区号
         int regionCode = y % regions;
+
+
         //格式化分区号
         DecimalFormat df = new DecimalFormat("00");
         return  df.format(regionCode);

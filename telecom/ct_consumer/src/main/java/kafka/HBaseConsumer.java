@@ -14,11 +14,14 @@ public class HBaseConsumer {
         kafkaConsumer.subscribe(Arrays.asList(PropertiesUtil.getProperty("kafka.topics")));
 
         HBaseDAO hd = new HBaseDAO();
+
         while(true){
+            //从kafka中获取数据
             ConsumerRecords<String, String> records = kafkaConsumer.poll(100);
             for(ConsumerRecord<String, String> cr : records){
                 String oriValue = cr.value();
                 System.out.println(oriValue);
+                //把数据写入Hbase
                 hd.put(oriValue);
             }
         }
