@@ -18,7 +18,7 @@ import scala.collection.mutable.ArrayBuffer
   */
 object Train {
   def main(args: Array[String]): Unit = {
-    //写入文件的输出流
+    //写入文件的输出流(中间建模的评估结果)
     val writer = new PrintWriter(new File("model_train.txt"))
     //初始化spark
     val sparkConf = new SparkConf()
@@ -34,15 +34,15 @@ object Train {
 
     //设立目标监测点：你要对哪几个监测点进行建模
     val monitorIDs = List("0005", "0015")
-    //取出相关监测点
+    //取出相关监测点   数据挖掘工程师会告诉我们  0005 和 0015  这两个监测点和哪些监测点是有关系的
     val monitorRelations = Map[String, Array[String]](
       "0005" -> Array("0003", "0004", "0005", "0006", "0007"),
       "0015" -> Array("0013", "0014", "0015", "0016", "0017"))
 
-    //遍历上边所有的监测点，读取数据
+    //遍历上边所有的监测点，将这些检测点的相关数据进行读取
     monitorIDs.map(monitorID => {
       //得到当前“目标监测点”的相关监测点
-      val monitorRelationArray = monitorRelations(monitorID)//得到的是Array（相关监测点）
+      val monitorRelationArray = monitorRelations(monitorID)//得到的是Array（相关监测点） eg："0003", "0004", "0005", "0006", "0007"
 
       //初始化时间
       val currentDate = Calendar.getInstance().getTime
@@ -54,8 +54,8 @@ object Train {
       val dateOfString = dateSDF.format(currentDate)
 
       //根据“相关监测点”，取得当日的所有的监测点的平均车速
-      //最终结果样式：(0005, {1033=93_2, 1034=1356_30})
-      val relationsInfo = monitorRelationArray.map(monitorID => {
+      //最终结果样式：(0005, {1033=93_2, 1034=1356_30})  eg: 0005这个监测点，10点33 平均车速93,2辆车
+      val relationsInfo = monitorRelationArray.map(monitorID => { //封装map的过程
         (monitorID, jedis.hgetAll(dateOfString + "_" + monitorID))//
       })
 
@@ -69,8 +69,9 @@ object Train {
       val dataTrain = ArrayBuffer[LabeledPoint]()
 
       //将时间拉回到1个小时之前，倒序，拉回单位：分钟
-
-      for(i <- Range(60 * hours, 2, -1)){
+      //println(Range(60 * hours, 2, -1))  从 60 到 3            60-范围  2-截止到2，不包含  -1-步长是-1
+        //Range(60,59,58.....5,4,3)
+      for(i <- Range(60 * hours, 2, -1)){  //
         dataX.clear()
         dataY.clear()
         //以下内容包含：线性滤波
