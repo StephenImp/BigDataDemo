@@ -1,0 +1,18 @@
+def addOne(f: Int => Int, arg: Int) = f(arg) + 1,
+    意思是 addOne要两个参数一个是:
+        传一个整数的参数且返回一个整形的方法的参数，
+        第二个参数就是一个整数，
+    方法体 执行第一个参数的方法f 且f的参数是该方法的第二个参数，然后把f 返回值+1 作为返回值,
+
+相当于java：
+
+    int addOne(SomeObject f ,int args){
+        return f.methodnName(args)+1;
+    }
+
+    class SomeObject{
+        int methodnName(int a){
+        return a*a;
+        }
+    }
+}

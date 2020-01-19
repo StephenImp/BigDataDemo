@@ -20,7 +20,7 @@ class MapDemo {
 
   /**
     * 2.获取map的值
-        map.get(“1”).get
+        map.get("1").get
         map.get(100).getOrElse(“no value”)：如果map中没有对应项，赋值为getOrElse传的值。
     */
     //获取值

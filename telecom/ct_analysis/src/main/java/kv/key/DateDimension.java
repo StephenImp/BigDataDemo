@@ -6,6 +6,9 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+/**
+ * 时间信息
+ */
 public class DateDimension extends BaseDimension {
     private String year;
     private String month;

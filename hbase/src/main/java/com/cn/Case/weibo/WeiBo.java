@@ -18,19 +18,19 @@ import org.apache.hadoop.hbase.util.Bytes;
  */
 public class WeiBo
 {
-    
+
     // 获取配置conf
     private Configuration conf = HBaseConfiguration.create();
-    
+
     // 微博内容表的表名
     private static final byte[] TABLE_CONTENT = Bytes.toBytes("weibo:content");
-    
+
     // 用户关系表的表名
     private static final byte[] TABLE_RELATIONS = Bytes.toBytes("weibo:relations");
-    
+
     // 微博收件箱表的表名
     private static final byte[] TABLE_RECEIVE_CONTENT_EMAIL = Bytes.toBytes("weibo:receive_content_email");
-    
+
     /**
      * 创建命名空间以及表名的定义
      */
@@ -74,7 +74,7 @@ public class WeiBo
             }
         }
     }
-    
+
     /**
      * 创建微博内容表  图①
      * Table Name:weibo:content RowKey:用户ID_时间戳
@@ -101,10 +101,10 @@ public class WeiBo
             // 设置版本确界
             info.setMaxVersions(1);
             info.setMinVersions(1);
-            
+
             content.addFamily(info);
             admin.createTable(content);
-            
+
         }
         catch (MasterNotRunningException e)
         {
@@ -133,7 +133,7 @@ public class WeiBo
             }
         }
     }
-    
+
     /**
      * 用户关系表 Table Name:weibo:relations     图②
      * RowKey:用户ID ColumnFamily:attends,fans
@@ -149,7 +149,7 @@ public class WeiBo
         {
             admin = new HBaseAdmin(conf);
             HTableDescriptor relations = new HTableDescriptor(TableName.valueOf(TABLE_RELATIONS));
-            
+
             // 关注的人的列族
             HColumnDescriptor attends = new HColumnDescriptor(Bytes.toBytes("attends"));
             // 设置块缓存
@@ -161,18 +161,18 @@ public class WeiBo
             // 设置版本确界
             attends.setMaxVersions(1);
             attends.setMinVersions(1);
-            
+
             // 粉丝列族
             HColumnDescriptor fans = new HColumnDescriptor(Bytes.toBytes("fans"));
             fans.setBlockCacheEnabled(true);
             fans.setBlocksize(2097152);
             fans.setMaxVersions(1);
             fans.setMinVersions(1);
-            
+
             relations.addFamily(attends);
             relations.addFamily(fans);
             admin.createTable(relations);
-            
+
         }
         catch (MasterNotRunningException e)
         {
@@ -201,7 +201,7 @@ public class WeiBo
             }
         }
     }
-    
+
     /**
      * 创建微博收件箱表     图③
      * Table Name: weibo:receive_content_email
@@ -219,12 +219,12 @@ public class WeiBo
             HTableDescriptor receive_content_email =
                 new HTableDescriptor(TableName.valueOf(TABLE_RECEIVE_CONTENT_EMAIL));
             HColumnDescriptor info = new HColumnDescriptor(Bytes.toBytes("info"));
-            
+
             info.setBlockCacheEnabled(true);
             info.setBlocksize(2097152);
             info.setMaxVersions(1000);
             info.setMinVersions(1000);
-            
+
             receive_content_email.addFamily(info);
             ;
             admin.createTable(receive_content_email);
@@ -261,6 +261,9 @@ public class WeiBo
      * 发布微博
      * a、微博内容表中数据+1
      * b、向微博收件箱表中加入微博的Rowkey(微博收件箱表对所有粉丝用户添加数据)
+     *
+     * 根据uid 发布内容，并通过uid找到这个人下所有的fans
+     *
      */
     public void publishContent(String uid, String content){
         HConnection connection = null;
@@ -278,7 +281,7 @@ public class WeiBo
             contentTBL.put(put);
 
             //b、向微博收件箱表中加入发布的Rowkey
-            //b.1、查询用户关系表，得到当前用户有哪些粉丝
+            //b.1、查询用户关系表，得到当前用户有哪些粉丝  根据uid与列族查询其对应的所有的粉丝
             HTableInterface relationsTBL = connection.getTable(TableName.valueOf(TABLE_RELATIONS));
             //b.2、取出目标数据
             Get get = new Get(Bytes.toBytes(uid));
@@ -296,6 +299,8 @@ public class WeiBo
             //开始操作收件箱表
             HTableInterface recTBL = connection.getTable(TableName.valueOf(TABLE_RECEIVE_CONTENT_EMAIL));
             List<Put> puts = new ArrayList<Put>();
+
+            //存入用户的粉丝与其发布内容的关系表
             for(byte[] fan : fans){
                 Put fanPut = new Put(fan);
                 fanPut.add(Bytes.toBytes("info"), Bytes.toBytes(uid), timestamp, Bytes.toBytes(rowKey));

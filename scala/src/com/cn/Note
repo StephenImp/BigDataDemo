@@ -1,0 +1,41 @@
+/**
+* 匿名函数
+* @return
+*/
+def add = (x:Int,y:Int) => x + y
+
+
+map与flatMap
+
+        List<String> strList = Arrays.asList("aaa", "bbb", "ccc", "ddd", "eee");
+
+		/**
+		 * .map
+		 */
+		Stream<Stream<Character>> stream2 = strList.stream()
+			   .map(TestStreamAPI1::filterCharacter);//{{a,a,a},{b,b,b}....}
+
+
+		/**
+		 * .flatMap
+		 */
+		Stream<Character> stream3 = strList.stream()
+			   .flatMap(TestStreamAPI1::filterCharacter);//{a,a,a,b,b,b }
+
+
+/**
+* 柯里化
+* 将原来接受两个参数的函数变成新的接受一个参数的函数的过程。
+* 新的函数返回一个以原有第二个参数为参数的函数。
+
+
+*/
+  def sum(f: Int => Int): (Int, Int) => Int = {
+    def sumF(a: Int, b: Int): Int =
+      if(a > b) 0
+      else f(a) + sumF(a+1, b)
+      sumF
+  }
+//于是得到如下定义，这样就简化了参数
+def sumInts2: (Int, Int) => Int = sum(x => x)
+println(sumInts2(1,2))

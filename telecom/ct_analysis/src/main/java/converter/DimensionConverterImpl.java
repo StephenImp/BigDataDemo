@@ -16,7 +16,7 @@ import java.sql.SQLException;
 
 /**
  * 1、根据传入的维度数据，得到该数据对应的在表中的主键id
- * ** 做内存缓存，LRUCache
+ * ** 做内存缓存，LRUCache  内存给一个恒定的值，达到临界值时，插入数据，挤掉最不常用的数据
  * 分支
  * -- 缓存中有数据 -> 直接返回id
  * -- 缓存中无数据 ->
@@ -40,6 +40,7 @@ public class DimensionConverterImpl implements DimensionConverter {
 
     @Override
     public int getDimensionID(BaseDimension dimension) {
+
         //1、根据传入的维度对象获取对应的主键id，先从LRUCache中获取
         //时间维度：date_dimension_year_month_day, 10
         //联系人维度：contact_dimension_telephone, 12

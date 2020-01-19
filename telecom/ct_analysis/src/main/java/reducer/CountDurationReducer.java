@@ -13,6 +13,10 @@ public class CountDurationReducer extends Reducer<ComDimension, Text, ComDimensi
     protected void reduce(ComDimension key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
         int callSum = 0;
         int callDurationSum = 0;
+
+        /**
+         * 相同的key,在mapper端会聚合在一起。
+         */
         for(Text t : values){
             callSum++;
             callDurationSum += Integer.valueOf(t.toString());
