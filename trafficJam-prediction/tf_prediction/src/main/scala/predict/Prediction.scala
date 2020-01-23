@@ -11,6 +11,12 @@ import scala.collection.mutable.ArrayBuffer
 
 /**
   * 堵车预测
+  *
+  * 用户输入时间，查询时间段内是否堵车
+  *
+  * 根据用户传入的时间点，拿到前3个特征向量-dataX
+  *
+  * 根据dataX 和 model 就可以实现预测
   */
 object Prediction {
   def main(args: Array[String]): Unit = {
@@ -77,7 +83,7 @@ object Prediction {
       val modelPath = jedis.hget("model", monitorID)
       val model = LogisticRegressionModel.load(sc, modelPath)
 
-      //预测
+      //预测  这里的3是 建模时，设定的等级
       val prediction = model.predict(Vectors.dense(dataX.toArray))
       println(monitorID + ",堵车评估值：" + prediction + ",是否通畅：" + (if(prediction >= 3) "通畅" else "拥堵"))
     })
