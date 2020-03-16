@@ -39,6 +39,7 @@ object SparkConsumer {
 
     /**
       * 将读取的kafka中的每一个事件转换成map集合
+      * {"0001" -> "57"} 是kafka中的原始数据
       */
     //解析json字符串,最终得到的event的形式是：{"0001" -> "57"}
     val event = kafkaLineDStream.map(line => {

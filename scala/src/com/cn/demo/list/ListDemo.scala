@@ -38,12 +38,12 @@ class ListDemo {
       "hello xasxt",
       "hello shsxt"
     )
-//    val mapResult:List[Array[String]] = nameList.map{ x => x.split(" ") }
-//    mapResult.foreach{println}
+    val mapResult:List[Array[String]] = nameList.map{ x => x.split(" ") }
+    mapResult.foreach{println}
 
     //flatmap
-    val flatMapResult : List[String] = nameList.flatMap{ x => x.split(" ") }
-    flatMapResult.foreach { println }
+//    val flatMapResult : List[String] = nameList.flatMap{ x => x.split(" ") }
+//    flatMapResult.foreach { println }
 
 }
 object ListDemo{
@@ -51,6 +51,5 @@ object ListDemo{
   def main(args: Array[String]): Unit = {
 
     val list = new ListDemo
-
   }
 }
