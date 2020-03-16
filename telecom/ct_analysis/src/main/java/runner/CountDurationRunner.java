@@ -6,7 +6,7 @@ import kv.value.CountDurationValue;
 import mapper.CountDurationMapper;
 import outputformat.MysqlOutputFormat;
 import reducer.CountDurationReducer;
-import org.apache.hadoop.conf.Configuration;	
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
@@ -43,6 +43,8 @@ public class CountDurationRunner implements Tool{
         //组装Mapper InputForamt
         initHBaseInputConfig(job);
         //组装Reducer Outputformat
+        //这里将数据与mysql进行关联 ***
+        //reducer 的 输出 就是outputFormat 的输入  ***
         initReducerOutputConfig(job);
         return job.waitForCompletion(true) ? 0 : 1;
     }
@@ -89,6 +91,9 @@ public class CountDurationRunner implements Tool{
         job.setReducerClass(CountDurationReducer.class);
         job.setOutputKeyClass(ComDimension.class);
         job.setOutputValueClass(CountDurationValue.class);
+
+        //这里将数据与mysql进行关联
+        //reducer 的 输出 就是outputFormat 的输入
         job.setOutputFormatClass(MysqlOutputFormat.class);
     }
 

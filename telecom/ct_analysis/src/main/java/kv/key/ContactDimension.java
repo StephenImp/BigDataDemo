@@ -6,6 +6,9 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+/**
+ * 联系人信息
+ */
 public class ContactDimension extends BaseDimension{
     private String telephone;
     private String name;

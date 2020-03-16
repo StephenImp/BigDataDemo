@@ -10,7 +10,7 @@
 
 
 
-Scala中“_”代表什么
+(1)Scala中“_”代表什么
 1、作为“通配符”，类似Java中的*。如import scala.math._
 2、:_* 作为一个整体，告诉编译器你希望将某个参数当作参数序列处理！
         例如val s = sum(1 to 5:_*)就是将1 to 5当作参数序列处理。
@@ -26,3 +26,22 @@ Scala中“_”代表什么
 对于Int来说，它是0。
 对于Double来说，它是0.0
 对于引用类型，它是null。
+
+
+(2)scala中“=>”的4种使用场景  -- https://www.cnblogs.com/wjunge/p/10043079.html
+1.表示函数的返回类型(Function Type)
+    函数double的类型就是 (x: Int) => Int 或者 Int => Int。左边是参数类型，右边是方法返回值类型。
+    备注： 当函数只有一个参数的时候，函数类型里面括起来函数参数的括号是可以省略的。
+
+2.匿名函数
+    匿名函数定义， 左边是参数 右边是函数实现体 （x: Int）=>{}
+
+3.case语句
+    在模式匹配 match 和 try-catch 都用 “=>” 表示输出的结果或返回的值
+
+4.By-Name Parameters(传名参数)
+    xxx
+
+
+
+scala中常用但其他语言不常见的符号含义---https://www.cnblogs.com/xinlingyoulan/p/6031157.html

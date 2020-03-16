@@ -29,6 +29,7 @@ public class MysqlOutputFormat extends OutputFormat<ComDimension, CountDurationV
             throw new RuntimeException(e.getMessage());
         }
 
+        //返回自定义  RecordWriter
         return new MysqlRecordWriter(conn);
     }
 
@@ -37,6 +38,13 @@ public class MysqlOutputFormat extends OutputFormat<ComDimension, CountDurationV
         //输出校检
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @Override
     public OutputCommitter getOutputCommitter(TaskAttemptContext context) throws IOException, InterruptedException {
         if(committer == null){
@@ -47,6 +55,9 @@ public class MysqlOutputFormat extends OutputFormat<ComDimension, CountDurationV
         return committer;
     }
 
+    /**
+     *   Reducer()输出一条聚合后的数据，这个write()就会被调用一次
+     */
     static class MysqlRecordWriter extends RecordWriter<ComDimension, CountDurationValue> {
         private DimensionConverterImpl dci = new DimensionConverterImpl();
         private Connection conn = null;
@@ -58,6 +69,13 @@ public class MysqlOutputFormat extends OutputFormat<ComDimension, CountDurationV
             this.conn = conn;
         }
 
+        /**
+         *
+         * @param key
+         * @param value
+         * @throws IOException
+         * @throws InterruptedException
+         */
         @Override
         public void write(ComDimension key, CountDurationValue value) throws IOException, InterruptedException {
             try {
@@ -66,6 +84,7 @@ public class MysqlOutputFormat extends OutputFormat<ComDimension, CountDurationV
 
                 //year month day
                 int idDateDimension = dci.getDimensionID(key.getDateDimension());
+
                 //telephone name
                 int idContactDimension = dci.getDimensionID(key.getContactDimension());
 

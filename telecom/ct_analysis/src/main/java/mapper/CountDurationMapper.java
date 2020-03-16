@@ -13,11 +13,24 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ * 不要用抽象的类或者接口作为输入输出类型。
+ *
+ * ComDimension     输入
+ * Text             输出
+ */
 public class CountDurationMapper extends TableMapper<ComDimension, Text>{
     private ComDimension comDimension = new ComDimension();
     private Text durationText = new Text();
     private Map<String, String> phoneNameMap;
 
+    /**
+     * 初始加载数据
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         super.setup(context);

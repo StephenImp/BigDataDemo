@@ -2,6 +2,8 @@ package com.cn.klh
 
 /**
   * Created by MOZi on 2019/5/13.
+
+  https://www.jianshu.com/p/5eb84e76ca6f
   *
   * 柯里化(Currying)指的是将原来接受两个参数的函数变成新的接受一个参数的函数的过程。
   * 新的函数返回一个以原有第二个参数为参数的函数。
@@ -82,16 +84,21 @@ object klh{
     * 柯里化
     * 将原来接受两个参数的函数变成新的接受一个参数的函数的过程。
     * 新的函数返回一个以原有第二个参数为参数的函数。
+
+         def    sum(f: Int => Int)    :    (Int, Int)        =>           Int              =  {}
+         定义   入参是一个匿名方法    :    接收方法的入参          返回参数是int类型
+
+         先这样理解吧，
     */
   def sum(f: Int => Int): (Int, Int) => Int = {
     def sumF(a: Int, b: Int): Int =
       if(a > b) 0
       else f(a) + sumF(a+1, b)
-    sumF
+      sumF
   }
 
   //于是得到如下定义，这样就简化了参数
-  def sumInts2: (Int, Int) => Int = sum(x => x)
+  def sumInts2: (Int, Int) => Int = sum(x => x)  //sumInts2(1,2)  传两个参数，返回一个int值,方法体是sum(x => x)
   def sumSquared2: (Int, Int) => Int = sum(x => x * x)
   def sumPowersOfTwo2: (Int, Int) => Int = sum(powerOfTwo)
 
