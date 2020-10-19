@@ -110,7 +110,7 @@ public class HBaseUtil {
         byte[][] splitKeys = new byte[regions][];
 
         //生成byte[][]类型的分区键的时候，一定要保证分区键是有序的 ***
-        TreeSet<byte[]> treeSet = new TreeSet<>(Bytes.BYTES_COMPARATOR);
+        TreeSet<byte[]> treeSet = new TreeSet<byte[]>(Bytes.BYTES_COMPARATOR);
         for(int i = 0; i < regions; i++){
             treeSet.add(Bytes.toBytes(keys[i]));
         }
